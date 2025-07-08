@@ -3,12 +3,13 @@ import pandas as pd
 import plotly.express as px
 import json
 import os
-import glob
+from src.normalize import title_normalize
+from src.utils import pre_load_csv_data, load_transactions
+from src.category import save_categories, add_keyword_to_category
 
 st.set_page_config(page_title="Simple Finance App", page_icon="💰", layout="wide")
 
 category_file = "categories.json"
-data_file_path = glob.glob('./data/*.csv')
 
 if "categories" not in st.session_state:
     st.session_state.categories = {
@@ -18,70 +19,6 @@ if "categories" not in st.session_state:
 if os.path.exists(category_file):
     with open(category_file, "r") as f:
         st.session_state.categories = json.load(f)
-
-def pre_load_csv_data():
-    df = []
-    for file in data_file_path:
-        data = load_transactions(file)
-        # print(data)
-        df.append(data)
-
-    df = pd.concat(df, ignore_index=True)
-
-    return df
-
-def save_categories():
-    with open(category_file, "w") as f:
-        json.dump(st.session_state.categories, f)
-
-def categorize_transactions(df):
-    df["category"] = "Uncategorized"
-
-    for category, keywords in st.session_state.categories.items():
-        if category == "Uncategorized" or not keywords:
-            continue
-
-        lowered_keywords = [keyword.lower().strip() for keyword in keywords]
-
-        for idx, row in df.iterrows():
-            details = row["title"].lower().strip()
-            if details in lowered_keywords:
-                df.at[idx, "category"] = category
-
-    return df
-
-def title_normalize(df):
-    forbidden_words = ['Pagamento recebido', 'Estorno']
-    df = df[~df['title'].isin(forbidden_words)]
-    df['title'] = (
-        df['title']
-        .replace(r'\s*- Parcela\s*\d+/\d+', '', regex=True)
-        .str.lower()
-        .str.strip()
-    )
-
-    return df
-
-def load_transactions(file):
-    try:
-        df = pd.read_csv(file)
-        print(df)
-        df.columns = [col.strip() for col in df.columns]
-        df["date"] = pd.to_datetime(df["date"])
-
-        return categorize_transactions(df)
-    except Exception as e:
-        st.error(f"Error processing file: {str(e)}")
-        return None
-
-def add_keyword_to_category(category, keyword):
-    keyword = keyword.strip()
-    if keyword and keyword not in st.session_state.categories[category]:
-        st.session_state.categories[category].append(keyword)
-        save_categories()
-        return True
-
-    return False
 
 def main():
     st.title("Simple Finance Dashboard")
@@ -97,14 +34,9 @@ def main():
             df = df_pre_loaded
 
         if df is not None:
-            # debits_df = df[df["Debit/Credit"] == "Debit"].copy()
-            # credits_df = df[df["Debit/Credit"] == "Credit"].copy()
             df = title_normalize(df)
             st.session_state.debits_df = df.copy()
 
-            # tab1, tab2 = st.tabs(["Expenses (Debits)", "Payments (Credits)"])
-            # tab1 = st.tabs(["Expenses"])
-            # with tab1:
             new_category = st.text_input("New Category Name")
             add_button = st.button("Add Category")
 
@@ -162,11 +94,5 @@ def main():
                 title="Expenses by Category"
             )
             st.plotly_chart(fig, use_container_width=True)
-
-            # with tab2:
-            #     st.subheader("Payments Summary")
-            #     total_payments = credits_df["Amount"].sum()
-            #     st.metric("Total Payments", f"{total_payments:,.2f} AED")
-            #     st.write(credits_df)
 
 main()
