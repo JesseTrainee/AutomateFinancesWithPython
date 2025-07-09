@@ -19,11 +19,10 @@ def pre_load_csv_data():
 def load_transactions(file):
     try:
         df = pd.read_csv(file)
-        print(df)
         df.columns = [col.strip() for col in df.columns]
         df["date"] = pd.to_datetime(df["date"])
-
-        return categorize_transactions(df)
+        return df
+        # return categorize_transactions(df)
     except Exception as e:
         st.error(f"Error processing file: {str(e)}")
         return None
