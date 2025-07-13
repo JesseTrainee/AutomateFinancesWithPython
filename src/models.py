@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, ForeignKey, select
+from sqlalchemy import update, create_engine, Column, Integer, String, Float, Date, ForeignKey, select
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 import pandas as pd
 
@@ -24,10 +24,17 @@ class Transaction(Base):
 class Keyword(Base):
     __tablename__ = 'keywords'
     id = Column(Integer, primary_key=True)
-    word = Column(String, nullable=False)
+    word = Column(String, unique=True, nullable=False)
     category_id = Column(Integer, ForeignKey('categories.id'))
 
     category = relationship('Category', back_populates='keywords')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "word": self.word,
+            "category_id": self.category_id,
+        }
 
 # Conexão e criação do banco
 engine = create_engine('sqlite:///finances.db')
@@ -70,9 +77,9 @@ def add_keyword_to_category(category, word):
         category = save_category(category)
 
     word = word.strip()
+    save_keyword(word, category.id)
     keyword = get_keyword(word)
-    if not keyword:
-        save_keyword(word, category.id)
+    return keyword
 
 def get_transactions():
     stmt = select(Transaction)
@@ -106,21 +113,21 @@ def save_transactions(df):
     session.close()
 
 
-def categorize_transactions(df):
-    df["category"] = "Uncategorized"
-    keywords = get_keywords()
-    for keywords['category_id'], keywords['word'] in keywords:
-        if category == "Uncategorized" or not keywords:
-            continue
+# def categorize_transactions(df):
+#     df["category"] = "Uncategorized"
+#     keywords = get_keywords()
+#     for keywords['category_id'], keywords['word'] in keywords:
+#         if category == "Uncategorized" or not keywords:
+#             continue
 
-        lowered_keywords = [keyword.lower().strip() for keyword in keywords]
+#         lowered_keywords = [keyword.lower().strip() for keyword in keywords]
 
-        for idx, row in df.iterrows():
-            details = row["title"].lower().strip()
-            if details in lowered_keywords:
-                df.at[idx, "category"] = category
+#         for idx, row in df.iterrows():
+#             details = row["title"].lower().strip()
+#             if details in lowered_keywords:
+#                 df.at[idx, "category"] = category
 
-    return df
+#     return df
 
 def get_transactions_data():
     results = session.query(
@@ -134,3 +141,12 @@ def get_transactions_data():
     df = pd.DataFrame(results, columns=['title', 'date', 'amount', 'category'])
 
     return df
+
+def update_transactions(keyword):
+    stmt = (
+        update(Transaction)
+        .where(Transaction.title == keyword.word)
+        .values(category_id=keyword.category_id)
+    )
+    session.execute(stmt)
+    session.commit()
