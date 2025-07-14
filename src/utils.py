@@ -1,7 +1,6 @@
 import glob
 import pandas as pd
 import streamlit as st
-from src.category import categorize_transactions
 
 data_file_path = glob.glob('./data/*.csv')
 
@@ -22,7 +21,6 @@ def load_transactions(file):
         df.columns = [col.strip() for col in df.columns]
         df["date"] = pd.to_datetime(df["date"])
         return df
-        # return categorize_transactions(df)
     except Exception as e:
         st.error(f"Error processing file: {str(e)}")
         return None

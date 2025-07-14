@@ -112,23 +112,6 @@ def save_transactions(df):
     session.commit()
     session.close()
 
-
-# def categorize_transactions(df):
-#     df["category"] = "Uncategorized"
-#     keywords = get_keywords()
-#     for keywords['category_id'], keywords['word'] in keywords:
-#         if category == "Uncategorized" or not keywords:
-#             continue
-
-#         lowered_keywords = [keyword.lower().strip() for keyword in keywords]
-
-#         for idx, row in df.iterrows():
-#             details = row["title"].lower().strip()
-#             if details in lowered_keywords:
-#                 df.at[idx, "category"] = category
-
-#     return df
-
 def get_transactions_data():
     results = session.query(
         Transaction.title,
