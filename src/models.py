@@ -66,7 +66,7 @@ def get_category(category_name = 'Uncategorized'):
     return session.query(Category).filter_by(name=category_name).first()
 
 def get_category_by_id(id):
-    return session.query(Category, id)
+    return session.query(Category).filter(Category.id == id).first()
 
 def get_keyword(word):
     return session.query(Keyword).filter_by(word=word).first()
@@ -122,7 +122,7 @@ def get_transactions_data():
 
     # Converter para DataFrame
     df = pd.DataFrame(results, columns=['title', 'date', 'amount', 'category'])
-
+    df["date"] = pd.to_datetime(df["date"])
     return df
 
 def update_transactions(keyword):
@@ -133,3 +133,11 @@ def update_transactions(keyword):
     )
     session.execute(stmt)
     session.commit()
+
+def delete_category(id):
+    category = get_category_by_id(id)
+    if category:
+        session.delete(category)
+        session.commit()
+        return True
+    return False
