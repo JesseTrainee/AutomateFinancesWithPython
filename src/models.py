@@ -123,6 +123,7 @@ def get_transactions_data():
     # Converter para DataFrame
     df = pd.DataFrame(results, columns=['title', 'date', 'amount', 'category'])
     df["date"] = pd.to_datetime(df["date"])
+    df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
     return df
 
 def update_transactions(keyword):

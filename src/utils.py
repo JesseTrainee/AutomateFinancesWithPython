@@ -19,12 +19,13 @@ def load_transactions(file):
     try:
         df = pd.read_csv(file)
         df.columns = [col.strip() for col in df.columns]
+        df = df[df["amount"] > 0]
         df["date"] = pd.to_datetime(df["date"])
         return df
     except Exception as e:
         st.error(f"Error processing file: {str(e)}")
         return None
 
-def get_last_month_date():
+def get_last_year_date():
     today = date.today()
-    return today - timedelta(days=30)
+    return today - timedelta(days=365)

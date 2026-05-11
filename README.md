@@ -1,11 +1,18 @@
 
 # AutomateFinancesWithPython
+This project was created with the goal of helping to organize and categorize finances. The main financial institution is Nubank.
+
+## Useful Commands
+```bash
+source .venv/bin/activate
+streamlit run main.py
+
+```
 
 ## Todo
-- Salvar os dados na base de dados;
-- Criar outras visualizações dos dados;
-- Pegar os dados de csv do google drive;
-- Colocar os csv pedidos do app recebidos por email no google drive;
+- Change the database from sqlite to postgresql;
+
+
 📊 Indicadores (KPIs)
 Use st.metric ou st.columns do Streamlit para mostrar indicadores rápidos:
 
@@ -49,17 +56,5 @@ Projeção de despesas com base em média diária/mensal.
 
 Simulação de orçamento: permitir que o usuário defina limites e veja se está estourando em tempo real.
 
-### 🛠️ Exemplo de agregações úteis com pandas
-### Total por categoria
-df.groupby('categoria')['valor'].sum().sort_values(ascending=False)
-
-### Total por mês
-df['data'] = pd.to_datetime(df['data'])
-df['ano_mes'] = df['data'].dt.to_period('M')
-df.groupby('ano_mes')['valor'].sum()
-
-### Média diária por mês
-df['dia'] = df['data'].dt.date
-df.groupby('dia')['valor'].sum().resample('M').mean()
-
-> Inspirado por [Tech With Tim's AutomateFinancesWithPython](https://github.com/techwithtim/AutomateFinancesWithPython). Este projeto começou como um fork, mas foi amplamente modificado desde então.
+> Inspired by [Tech With Tim's AutomateFinancesWithPython](https://github.com/techwithtim/AutomateFinancesWithPython).
+> This project started as a fork, but has been extensively modified since then.

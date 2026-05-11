@@ -1,4 +1,10 @@
 streamlit==1.32.0
 pandas==2.2.0
 plotly==5.18.0
-numpy==1.26.4 
+numpy==1.26.4
+
+# --- Bibliotecas Google (autenticação e APIs) ---
+google-auth>=2.34.0
+google-auth-oauthlib>=1.2.1
+google-auth-httplib2>=0.2.0
+google-api-python-client>=2.151.0

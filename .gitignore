@@ -209,3 +209,6 @@ venv/
 #Data
 data/
 *.db
+
+credentials.json
+token.json
