@@ -3,14 +3,44 @@
 This project was created with the goal of helping to organize and categorize finances. The main financial institution is Nubank.
 
 ## Useful Commands
-```bash
-source .venv/bin/activate
-streamlit run main.py
 
+### Ambiente
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install SQLAlchemy matplotlib alembic
+```
+
+### Aplicação
+```bash
+streamlit run main.py
+```
+
+### Migrations (Alembic)
+```bash
+# Aplicar todas as migrations pendentes
+alembic upgrade head
+
+# Gerar nova migration automaticamente após alterar src/models.py
+alembic revision --autogenerate -m "descricao_da_mudanca"
+
+# Ver o histórico de migrations aplicadas
+alembic history
+
+# Ver qual migration está aplicada atualmente
+alembic current
+
+# Reverter a última migration
+alembic downgrade -1
+
+# Reverter todas as migrations
+alembic downgrade base
 ```
 
 ## Todo
 - Change the database from sqlite to postgresql;
+- Add login page;
 
 
 📊 Indicadores (KPIs)
